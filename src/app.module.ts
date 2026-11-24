@@ -4,6 +4,8 @@ import { AuthModule } from './auth/auth.module.js';
 import { UserModule } from './user/user.module.js';
 import { ConfigModule } from '@nestjs/config';
 import { envSchema } from './config/config.schema.js';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard.js';
 
 @Module({
   imports: [
@@ -15,6 +17,12 @@ import { envSchema } from './config/config.schema.js';
       validationSchema: envSchema,
     }),
   ],
+  // providers: [
+  //   {
+  //     provide: APP_GUARD,
+  //     useClass: AuthGuard,
+  //   },
+  // ],
 })
 export class AppModule {}
 

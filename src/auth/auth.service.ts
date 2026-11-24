@@ -8,13 +8,14 @@ import { ArgonService } from '../hasher/argon.service.js';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Env } from '../config/config.schema.js';
+import { User } from '../user/user.entity.js';
 
 type RegisterInput = {
   email: string;
   password: string;
 };
 
-type UserPayload = {
+export type UserPayload = {
   sub: string;
   email: string;
 };
@@ -60,5 +61,13 @@ export class AuthService {
       expiresIn: this.config.get('JWT_EXPIRES_IN', { infer: true }),
     });
     return accessToken;
+  }
+
+  async getMe(userId: string): Promise<User> {
+    const user = await this.userService.findById(+userId);
+    if (!user) {
+      throw new UnauthorizedException('User removed');
+    }
+    return user;
   }
 }

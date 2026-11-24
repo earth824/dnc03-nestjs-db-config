@@ -1,8 +1,19 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import { type RegisterDto, registerSchema } from './dto/register.dto.js';
 import { type LoginDto, loginSchema } from './dto/login.dto.js';
+import { AuthGuard } from './auth.guard.js';
+import { User } from './decorators/user.decorator.js';
 
+// @UseGuards(AuthGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -16,5 +27,11 @@ export class AuthController {
   @Post('login')
   login(@Body({ schema: loginSchema }) dto: LoginDto) {
     return this.authService.login(dto.email, dto.password);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('me')
+  getMe(@User('sub') id: string) {
+    return this.authService.getMe(id);
   }
 }
