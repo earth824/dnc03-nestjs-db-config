@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
@@ -13,6 +14,7 @@ import { type LoginDto, loginSchema } from './dto/login.dto.js';
 import { AuthGuard } from './auth.guard.js';
 import { User } from './decorators/user.decorator.js';
 import { Public } from './decorators/public.decorator.js';
+import { GlobalExceptionFilter } from '../common/global-exception.filter.js';
 
 // @Public() // IS_PUBLIC => true
 // @UseGuards(AuthGuard)
@@ -34,6 +36,7 @@ export class AuthController {
   }
 
   // @UseGuards(AuthGuard)
+  // @UseFilters(GlobalExceptionFilter)
   @Get('me')
   getMe(@User('sub') id: string) {
     return this.authService.getMe(id);
