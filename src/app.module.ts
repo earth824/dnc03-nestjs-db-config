@@ -17,12 +17,12 @@ import { AuthGuard } from './auth/auth.guard.js';
       validationSchema: envSchema,
     }),
   ],
-  // providers: [
-  //   {
-  //     provide: APP_GUARD,
-  //     useClass: AuthGuard,
-  //   },
-  // ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}
 

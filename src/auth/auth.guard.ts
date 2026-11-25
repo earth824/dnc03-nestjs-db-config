@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Env } from '../config/config.schema.js';
+import { Reflector } from '@nestjs/core';
+import { IS_PUBLIC } from './decorators/public.decorator.js';
 
 // 1. Each Controller Method (@UseGuard)
 // 2. All Controller Method (@UseGuard)
@@ -19,9 +21,23 @@ export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly config: ConfigService<Env, true>,
+    private readonly reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // CHECK ROUTE HANDLE is public ?
+    // if POST /auth/register
+    const isPublic = this.reflector.getAllAndOverride<boolean | undefined>(
+      IS_PUBLIC,
+      [
+        context.getHandler(), // register, IS_PUBLIC => true
+        context.getClass(), // AuthController, IS_PUBLIC => undefined
+      ],
+    );
+    // if it is public bypass this guard (return true)
+    if (isPublic) return true;
+    // otherwise verify token
+
     // verify jwt: Authorization: Bearer JWT_TOKEN
     // NESTJS can build HTTP Server, Web Socket Server(Chat), GraphQl, microservice
     // CHAT: client => server, server => client
